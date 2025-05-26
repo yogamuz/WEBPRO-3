@@ -9,14 +9,14 @@ use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\PDF;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\DB;
+use App\Models\DetailAntrian;
 
 class AntrianController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-
-    // Menampilkan Semua data antrian yang tersedia
     public function index(Antrian $antrian)
     {
         $kode = $antrian->kode;
@@ -28,11 +28,6 @@ class AntrianController extends Controller
         ]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-
-    //  Menampilkan view tambah antrian baru
     public function create(Antrian $antrian)
     {
         $kode = $antrian->kode;
@@ -41,138 +36,188 @@ class AntrianController extends Controller
             'antrian'   => $antrian,
             'kode'      => $kode
         ]); 
-        
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-
-    //  Proses Store
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'tanggal'       => 'required',
-            'nama_lengkap'  => 'required',
-            'alamat'        => 'required',
-            'nomorhp'       => 'required',
-            'antrian_id'    => 'required',
-        ]);
-    
-        $antrian        = Antrian::findOrFail($validated['antrian_id']);
-        $service_code   = $antrian->kode;
-    
-        // ambil record terakhir dari tabel Ambilantrian berdasarkan tanggal dan kode
-        $last_record = Ambilantrian::where('tanggal', $validated['tanggal'])
-            ->where('kode', 'like', $service_code.'%')
-            ->orderBy('created_at', 'desc')
+        try {
+            $validator = Validator::make($request->all(), [
+                'tanggal' => 'required|date|after_or_equal:today',
+                'nama_lengkap' => 'required|string|max:255',
+                'alamat' => 'required|string|max:1000',
+                'nomorhp' => 'required|string|max:20|regex:/^[0-9+\-\s]+$/',
+                'antrian_id' => 'required|exists:antrians,id',
+            ], [
+                'tanggal.after_or_equal' => 'Tanggal tidak boleh sebelum hari ini',
+                'nomorhp.regex' => 'Format nomor HP tidak valid'
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'errors' => $validator->errors(),
+                    'message' => 'Validasi gagal'
+                ], 422);
+            }
+
+            $validated = $validator->validated();
+
+            if (!auth()->check()) {
+                return response()->json([
+                    'message' => 'Anda harus login terlebih dahulu'
+                ], 401);
+            }
+
+            $antrian = Antrian::findOrFail($validated['antrian_id']);
+
+            $antrianCount = Ambilantrian::where('antrian_id', $antrian->id)
+                ->where('tanggal', $validated['tanggal'])
+                ->count();
+
+            if ($antrianCount >= $antrian->batas_antrian) {
+                return response()->json([
+                    'message' => 'Maaf, antrian untuk tanggal ini sudah penuh'
+                ], 422);
+            }
+
+            $kodeAntrian = $this->generateKodeAntrian($antrian->id, $validated['tanggal'], $antrian->kode);
+
+            $ambilAntrian = Ambilantrian::create([
+                'tanggal' => $validated['tanggal'],
+                'nama_lengkap' => $validated['nama_lengkap'],
+                'alamat' => $validated['alamat'],
+                'nomorhp' => $validated['nomorhp'],
+                'kode' => $kodeAntrian,
+                'antrian_id' => $antrian->id,
+                'user_id' => auth()->id(),
+            ]);
+
+            return response()->json([
+                'success' => 'Berhasil mengambil antrian! Nomor antrian Anda: ' . $kodeAntrian,
+                'kode_antrian' => $kodeAntrian
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Error in store method: ' . $e->getMessage());
+            return response()->json([
+                'message' => 'Terjadi kesalahan server: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    private function generateKodeAntrian($antrianId, $tanggal, $kodeLayanan)
+    {
+        $lastRecord = Ambilantrian::where('antrian_id', $antrianId)
+            ->where('tanggal', $tanggal)
+            ->orderBy('id', 'desc')
             ->first();
-    
-        // jika record terakhir tidak ada, maka kode dimulai dari 001
-        if (!$last_record) {
-            $next_kode = '001';
+
+        if ($lastRecord) {
+            $lastNumber = (int) substr($lastRecord->kode, strrpos($lastRecord->kode, '-') + 1);
+            $nextNumber = $lastNumber + 1;
         } else {
-            // parsing kode terakhir menjadi integer
-            $last_kode_int = intval(substr($last_record->kode, -3));
-    
-            // increment nilai integer dan padding kembali dengan 0
-            $next_kode_int = str_pad(++$last_kode_int, 3, '0', STR_PAD_LEFT);
-    
-            $next_kode = $next_kode_int;
-        }
-        
-        // validasi untuk memastikan tidak terjadi duplikasi pada kode antrian pada tanggal yang sama
-        $kode_antrian = $service_code . '-' . $next_kode;
-        $existing_record = Ambilantrian::where('kode', $kode_antrian)->where('tanggal', $validated['tanggal'])->first();
-        if ($existing_record) {
-            return redirect('/antrian')->with('error', 'Maaf,gagal mengambil antrian. Silahkan ambil di hari lain');
+            $nextNumber = 1;
         }
 
+        $formattedNumber = str_pad($nextNumber, 3, '0', STR_PAD_LEFT);
         
-        // Mengecek apakah jumlah antrian pada tabel ambilantrian
-        $antrian_count = Ambilantrian::where('antrian_id', $validated['antrian_id'])
-            ->where('tanggal', $validated['tanggal'])
-            ->count();
-    
-        // Mengecek apakah jumlah antrian pada tabel antrian
-        $batas_antrian = $antrian->batas_antrian;
-    
-        // Membandingkan data dari tabel ambilantrian(user) dengan tabel antrian(Admin) yang sudah ditentukan
-        if($antrian_count >= $batas_antrian){
-            return redirect('/antrian')->with('error', 'Maaf, Antrian Sudah Penuh Silahkan Coba Di Hari Lain');
-        }
-    
-        // gabungkan kode dari tabel Antrian dan integer baru untuk kode_antrian pada tabel Ambilantrian
-        $next_kode_padded = str_pad($next_kode, 3, '0', STR_PAD_LEFT); // tambahkan padding 0 pada kode
-        $validated['kode'] = $service_code . '-' . $next_kode_padded;
-    
-        $validated['user_id'] = auth()->user()->id;
-        $validated['tanggal'] = $validated['tanggal']; // tambahkan kolom tanggal
-    
-        Ambilantrian::create($validated);
-        return redirect('/antrian')->with('success', 'Berhasil Mengambil Antrian');
+        return $kodeLayanan . '-' . $formattedNumber;
     }
-    
-   
 
-    /**
-     * Display the specified resource.
-     */
+    public function detail($id)
+    {
+        $antrian = Antrian::find($id);
+        
+        if (!$antrian) {
+            abort(404, 'Antrian tidak ditemukan');
+        }
 
-    //  Menampilkan Detail antrian yang diambil user user
-     public function detail(Antrian $antrian)
-     {
+        $detailAntrian = Ambilantrian::where('user_id', auth()->id())
+                                    ->where('antrian_id', $antrian->id)
+                                    ->get();
+
         return view('antrian.detail', [
-            'antrian'       => $antrian,
-            'detailAntrian' => Ambilantrian::where('user_id', auth()->user()->id)->get()
+            'antrian' => $antrian,
+            'detailAntrian' => $detailAntrian
         ]);
-     }
-
-    public function show()
-    {
-        // 
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Ambilantrian $ambilantrian)
+    public function detailUser()
     {
-        //
+        $detailAntrian = DetailAntrian::with('antrian')
+                          ->where('user_id', Auth::id())
+                          ->get();
+
+        return view('antrian.detail', compact('detailAntrian'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Antrian $antrian)
+    public function show(Layanan $listPendaftar)
     {
-        //
+        return view('antrian.show', [
+            'listPendaftar' => $listPendaftar
+        ]);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
+    public function edit($id)
+    {
+        $antrian = Ambilantrian::findOrFail($id);
+        
+        if ($antrian->user_id !== Auth::id()) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+        
+        return response()->json($antrian);
+    }
+
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'nama_lengkap' => 'required|string|max:255',
+            'tanggal' => 'required|date',
+            'alamat' => 'required|string'
+        ]);
+
+        $antrian = Ambilantrian::findOrFail($id);
+        
+        if ($antrian->user_id !== Auth::id()) {
+            return redirect()->back()->with('error', 'Anda tidak memiliki akses untuk mengedit antrian ini');
+        }
+
+        $antrian->update([
+            'nama_lengkap' => $request->nama_lengkap,
+            'tanggal' => $request->tanggal,
+            'alamat' => $request->alamat
+        ]);
+
+        return redirect()->back()->with('success', 'Data antrian berhasil diperbarui');
+    }
+
     public function destroy($id)
     {
         $ambilAntrian = Ambilantrian::findOrFail($id);
+        
+        if ($ambilAntrian->user_id !== Auth::id()) {
+            return redirect()->back()->with('error', 'Anda tidak memiliki akses untuk menghapus antrian ini');
+        }
+        
         Ambilantrian::destroy($ambilAntrian->id);
 
-        return redirect('/antrian/detail')->with('success', 'Berhasil Menghapus Antrian');
+        return redirect()->back()->with('success', 'Berhasil Menghapus Antrian');
     }
 
-    // Cetak kartu antrian
-    public function cetakKodeAntrian(Ambilantrian $id)
+    public function generatePDF($id)
     {
-        $cetakKodeAntrian = Ambilantrian::find($id->id);
-        $logoPath = storage_path('app/public/logo/logo.png');
-
-        $logo = base64_encode(file_get_contents($logoPath));
-
-        $pdf = PDF::loadView('antrian.kode-antrian', [
-            'cetakKodeAntrian' => $cetakKodeAntrian,
-            'logo'             => $logo
+        $layanan = Layanan::findOrFail($id);
+        
+        $antrians = Ambilantrian::where('antrian_id', $id)
+                               ->where('user_id', auth()->id())
+                               ->get();
+        
+        $pdf = PDF::loadView('antrian.pdf', [
+            'layanan' => $layanan,
+            'antrians' => $antrians,
+            'user' => auth()->user()
         ]);
-
-        return $pdf->stream('kode-antrian.pdf');
+        
+        return $pdf->stream('daftar-antrian-' . $layanan->nama_layanan . '-' . auth()->user()->name . '.pdf');
     }
 }

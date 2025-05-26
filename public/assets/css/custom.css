@@ -1,0 +1,94 @@
+/* Submit Button Styling */
+.submit-btn {
+  background: #ffc107;
+  border: 0;
+  padding: 12px 34px;
+  color: #ffffff;
+  transition: 0.4s;
+  border-radius: 50px;
+  font-weight: 500;
+  font-size: 16px;
+  margin-top: 20px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.submit-btn:hover {
+  background: #e0a800;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.submit-btn:disabled {
+  background: #ffe083;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Notification Styling */
+.notification-message {
+  position: relative;
+  padding: 16px 20px;
+  border-radius: 8px;
+  margin-bottom: 25px;
+  width: 100%;
+  animation: fadeIn 0.3s ease-in-out;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: opacity 0.3s ease;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.notification-content {
+  display: flex;
+  align-items: center;
+}
+
+.notification-icon {
+  margin-right: 12px;
+  font-size: 20px;
+}
+
+.notification-success {
+  background-color: #d1f7ea;
+  color: #0d6e4e;
+  border-left: 4px solid #0d6e4e;
+}
+
+.notification-error {
+  background-color: #fce8e8;
+  color: #e53935;
+  border-left: 4px solid #e53935;
+}
+
+.notification-close {
+  background: transparent;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: inherit;
+  opacity: 0.7;
+  padding: 0;
+  margin-left: 10px;
+}
+
+.notification-close:hover {
+  opacity: 1;
+}
+
+@keyframes fadeIn {
+  0% { opacity: 0; transform: translateY(-10px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+/* Chatbot Service CSS - Yellow-Orange Theme */
+
+:root {
+  --chat-primary: #FFA500; /* Orange */
+  --chat-secondary: #FFD700; /* Gold/Yellow */
+  --chat-dark: #FF8C00; /* Dark Orange */
+  --chat-light: #FFFAF0; /* FloralWhite */
+  --chat-text: #333333;
+  --chat-shadow: rgba(255, 165, 0, 0.3);
+}

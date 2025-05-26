@@ -12,6 +12,7 @@
                 <!-- Button untuk Menampilkan Modal Tambah -->
                 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#tambah-menu-antrian">
                     <i class="bi bi-plus-square"></i> Tambah antrian Baru
+                    
                 </button>
             </div>
             <!-- Card Body -->

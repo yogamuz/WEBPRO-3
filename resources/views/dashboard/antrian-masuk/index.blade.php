@@ -50,7 +50,7 @@
                                 <button class="btn btn-primary" onclick="responsiveVoice.speak('Nomor Antrian {{ $antrian_masuk->kode }} Menuju ke loket {{ $antrian_masuk->antrian->nama_layanan }}', 'Indonesian Female', {rate: 0.8});" onblur="responsiveVoice.cancel();" type="button" value="Play"><i class="bi bi-mic"></i></button>
                               </body>
                             </td>
-                            <td>
+                            <td> 
                               <!-- Button Ada untuk menghapus data antrian jika User yang dipanggil ada -->
                               <form id="{{ $antrian_masuk->id }}" action="/dashboard/antrian-masuk/{{ $antrian_masuk->id }}" method="POST" class="d-inline">
                                 @csrf

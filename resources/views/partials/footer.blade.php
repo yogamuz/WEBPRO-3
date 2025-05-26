@@ -8,7 +8,7 @@
             <div class="footer-info">
               <h3><img src="/assets/img/logo.png" alt="" width="150px" height="150px"></h3>
               <p>
-                Kec. Kota Kefamenanu, Kabupaten Timor Tengah Utara, Nusa Tenggara Timur.
+              Gedung Balaikota DiBaleka II, Jl. Margonda Raya No.54, Depok, Kec. Pancoran Mas, Depok, Indonesia 16431.
               </p>
               <div class="social-links mt-3">
                 <a href="#" class="twitter"><i class="bx bxl-twitter"></i></a>
@@ -41,10 +41,9 @@
 
           <div class="col-lg-4 col-md-6 footer-newsletter">
             <h4>Dapatkan Update Informasi Terbaru</h4>
-            <p>Kirimkan email anda untuk mendapatkan update informasi tentang layanan disdukcapil kabupaten Timor Tengah Utara</p>
-            <form action="" method="post">
-              <input type="email" name="email"><input type="submit" value="Subscribe">
-            </form>
+            <p>Dengan hormat, kami menyarankan segenap warga Kota Depok untuk mengikuti dan berinteraksi melalui saluran resmi media sosial Dinas Kependudukan dan Pencatatan Sipil 
+              (Disdukcapil) Kota Depok, demi mendapatkan informasi layanan dan sosialisasi kebijakan secara akurat dan terkini.</p>
+
 
           </div>
 

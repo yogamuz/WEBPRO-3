@@ -19,4 +19,10 @@ class Layanan extends Model
     {
         return $this->hasMany(Antrian::class);
     }
+
+    // Tambahkan relasi ke AmbilAntrian
+    public function ambilantrians()
+    {
+        return $this->hasMany(Ambilantrian::class, 'antrian_id', 'id');
+    }
 }

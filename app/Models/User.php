@@ -47,4 +47,21 @@ class User extends Authenticatable
         return $this->roles === $roles;
     }
 
+    // app/Models/User.php (tambahkan ini)
+public function roles()
+{
+    return $this->belongsToMany(Role::class);
+}
+
+// public function hasRole($role)
+// {
+//     return $this->roles()->where('name', $role)->exists();
+// }
+
+public function hasAnyRole($roles)
+{
+    return $this->roles()->whereIn('name', (array) $roles)->exists();
+}
+
+
 }

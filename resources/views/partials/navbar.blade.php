@@ -30,7 +30,7 @@
               @if (auth()->user()->roles === 'admin')
                   <li><a class="dropdown-item" href="/dashboard">Dashboard </a></li>
               @else
-                  <li><a class="dropdown-item" href="/antrian/detail">Antrian Saya </a></li>
+                  <li><a class="dropdown-item" href="{{ route('antrian.index') }}"></a></li>
               @endif    
               
                 <form action="/logout" method="post">

@@ -81,6 +81,7 @@
           </div>
 
         </div>
+        
       </section>
 
         <!-- Menampilkan Modal Tambah Antrian -->
@@ -119,6 +120,8 @@
                   })
               })
           }
+
+          
         </script>
 
         <!-- Alert Jika User sudah pernah mengambil antrian di layanan yang sama -->
@@ -139,7 +142,7 @@
           const alertTrigger = document.getElementById('containsButton')
           if (alertTrigger) {
             alertTrigger.addEventListener('click', () => {
-              appendAlert('Anda sudah mengambil antrian ini, <a href="/antrian/detail" class="alert-link">Cek Detail</a>', 'danger')
+              appendAlert('Anda sudah mengambil antrian ini.', 'danger')
             })
           }
         </script>

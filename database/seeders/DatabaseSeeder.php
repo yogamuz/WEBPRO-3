@@ -8,6 +8,7 @@ use App\Models\Ambilantrian;
 use App\Models\User;
 use App\Models\Antrian;
 use App\Models\Layanan;
+use App\Models\Contact;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -99,6 +100,134 @@ class DatabaseSeeder extends Seeder
             'roles'     => 'admin'
         ]);
 
+        // 2. User Pertama
+        User::create([
+            'name'      => 'Andi Wijaya',
+            'email'     => 'andi@gmail.com',
+            'password'  => bcrypt('password123'),
+            'roles'     => 'masyarakat'
+        ]);
 
+        // 3. User Kedua
+        User::create([
+            'name'      => 'Budi Santoso',
+            'email'     => 'budi@gmail.com',
+            'password'  => bcrypt('password123'),
+            'roles'     => 'masyarakat'
+        ]);
+
+        // 4. User Ketiga
+        User::create([
+            'name'      => 'Citra Lestari',
+            'email'     => 'citra@gmail.com',
+            'password'  => bcrypt('password123'),
+            'roles'     => 'masyarakat'
+        ]);
+
+        // 5. User Keempat
+        User::create([
+            'name'      => 'Dewi Anggraeni',
+            'email'     => 'dewi@gmail.com',
+            'password'  => bcrypt('password123'),
+            'roles'     => 'masyarakat'
+        ]);
+
+        // 6. User Kelima
+        User::create([
+            'name'      => 'Eko Prasetyo',
+            'email'     => 'eko@gmail.com',
+            'password'  => bcrypt('password123'),
+            'roles'     => 'masyarakat'
+        ]);
+
+        // 7. User Keenam
+        User::create([
+            'name'      => 'Fitriani Sari',
+            'email'     => 'fitri@gmail.com',
+            'password'  => bcrypt('password123'),
+            'roles'     => 'masyarakat'
+        ]);
+
+        // ===== DATA DUMMY UNTUK TABEL CONTACT =====
+        Contact::create([
+            'name'    => 'Ahmad Rizki',
+            'email'   => 'ahmad.rizki@gmail.com',
+            'subject' => 'Pertanyaan tentang Syarat E-KTP',
+            'message' => 'Selamat pagi, saya ingin menanyakan tentang syarat-syarat yang diperlukan untuk mengurus E-KTP baru. Apakah ada persyaratan khusus untuk warga yang baru pindah domisili?'
+        ]);
+
+        Contact::create([
+            'name'    => 'Siti Nurhaliza',
+            'email'   => 'siti.nurhaliza@yahoo.com',
+            'subject' => 'Jam Operasional Pelayanan',
+            'message' => 'Mohon informasi mengenai jam operasional pelayanan di kantor kelurahan. Apakah buka pada hari Sabtu? Terima kasih.'
+        ]);
+
+        Contact::create([
+            'name'    => 'Bambang Sutrisno',
+            'email'   => 'bambang.sutrisno@gmail.com',
+            'subject' => 'Keluhan Antrian Online',
+            'message' => 'Saya mengalami kesulitan dalam mengambil antrian online untuk layanan Kartu Keluarga. Sistem sepertinya error. Mohon bantuan untuk memperbaiki sistem tersebut.'
+        ]);
+
+        Contact::create([
+            'name'    => 'Maya Sari',
+            'email'   => 'maya.sari@hotmail.com',
+            'subject' => 'Prosedur Akta Kelahiran',
+            'message' => 'Bagaimana prosedur untuk mengurus akta kelahiran anak yang baru lahir? Dokumen apa saja yang harus disiapkan? Mohon penjelasannya.'
+        ]);
+
+        Contact::create([
+            'name'    => 'Rudi Hartono',
+            'email'   => 'rudi.hartono@gmail.com',
+            'subject' => 'Saran Perbaikan Layanan',
+            'message' => 'Saya ingin memberikan saran untuk meningkatkan kualitas pelayanan, terutama dalam hal waktu tunggu yang terlalu lama. Semoga bisa menjadi bahan evaluasi.'
+        ]);
+
+        // ===== DATA DUMMY UNTUK TABEL AMBILANTRIANS =====
+        Ambilantrian::create([
+            'tanggal'       => now()->format('Y-m-d'),
+            'kode'          => 'KTP-001',
+            'nama_lengkap'  => 'Andi Wijaya',
+            'alamat'        => 'Jl. Margonda Raya No. 123, Depok',
+            'nomorhp'       => '081234567890',
+            'batas_antrian' => null,
+            'antrian_id'    => 1, // ID dari tabel antrian untuk layanan E-KTP
+            'user_id'       => 2  // ID user Andi Wijaya
+        ]);
+
+        Ambilantrian::create([
+            'tanggal'       => now()->format('Y-m-d'),
+            'kode'          => 'KTP-002',
+            'nama_lengkap'  => 'Budi Santoso',
+            'alamat'        => 'Jl. Pochinki Raya No. 456, Beji, Depok',
+            'nomorhp'       => '081234567891',
+            'batas_antrian' => null,
+            'antrian_id'    => 1, // ID dari tabel antrian untuk layanan E-KTP
+            'user_id'       => 3  // ID user Budi Santoso
+        ]);
+
+        Ambilantrian::create([
+            'tanggal'       => now()->format('Y-m-d'),
+            'kode'          => 'KK-001',
+            'nama_lengkap'  => 'Citra Lestari',
+            'alamat'        => 'Jl. Juanda No. 789, Pancoran Mas, Depok',
+            'nomorhp'       => '081234567892',
+            'batas_antrian' => null,
+            'antrian_id'    => 2, // ID dari tabel antrian untuk layanan KK
+            'user_id'       => 4  // ID user Citra Lestari
+        ]);
+
+
+        Ambilantrian::create([
+            'tanggal'       => now()->format('Y-m-d'),
+            'kode'          => 'KK-002',
+            'nama_lengkap'  => 'Fitriani Sari',
+            'alamat'        => 'Jl. Limo Raya No. 987, Limo, Depok',
+            'nomorhp'       => '081234567895',
+            'batas_antrian' => null,
+            'antrian_id'    => 2, // ID dari tabel antrian untuk layanan KK
+            'user_id'       => 7  // ID user Fitriani Sari
+        ]);
     }
 }

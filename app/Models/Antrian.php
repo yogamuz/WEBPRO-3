@@ -12,9 +12,8 @@ use Cviebrock\EloquentSluggable\Sluggable;
 class Antrian extends Model
 {
     use HasFactory;
-    Use Sluggable;
+    use Sluggable;
     
-    // protected $guarded = ['id'];
     protected $fillable = ['nama_layanan', 'kode','deskripsi', 'slug', 'persyaratan', 'batas_antrian', 'user_id'];
 
     public function user()
@@ -22,7 +21,8 @@ class Antrian extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function Ambilantrians()
+    // Fix: konsistensi nama method
+    public function ambilantrians()
     {
         return $this->hasMany(Ambilantrian::class);
     }
@@ -41,9 +41,8 @@ class Antrian extends Model
     {
         return [
             'slug' => [
-                'source' => 'nama_antrian'
+                'source' => 'nama_layanan' // Fix: ubah dari 'nama_antrian' ke 'nama_layanan'
             ]
         ];
     }
-
 }

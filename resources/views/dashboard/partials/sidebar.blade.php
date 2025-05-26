@@ -50,10 +50,20 @@
             <div class="sidebar-heading">
                 Data Master
             </div>
+            
             <li class="nav-item">
                 <a class="nav-link" href="/dashboard/layanan">
                     <i class="bi bi-headset"></i>
-                    <span>Layanan</span></a>
+                    <span>Layanan</span>
+                </a>
+                    
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/dashboard/pesan">
+                      <i class="bi bi-envelope-fill"></i>
+                    <span>Pesan</span>
+                </a>
+                    
             </li>
 
             <!-- Divider -->
