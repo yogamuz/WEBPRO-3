@@ -47,7 +47,7 @@
                             <td>
                               <!-- Memutar Suara Pemanggilan Antrian -->
                               <body onunload="responsiveVoice.cancel();">
-                                <button class="btn btn-primary" onclick="responsiveVoice.speak('Nomor Antrian {{ $antrian_masuk->kode }} atas nama {{ $antrian_masuk->name }} Menuju ke loket {{ $antrian_masuk->antrian->nama_layanan }}', 'Indonesian Female', {rate: 0.8});" onblur="responsiveVoice.cancel();" type="button" value="Play"><i class="bi bi-mic"></i></button>
+                                <button class="btn btn-primary" onclick="responsiveVoice.speak('Nomor Antrian {{ $antrian_masuk->kode }} atas nama {{ $antrian_masuk->nama_lengkap }} Menuju ke loket {{ $antrian_masuk->antrian->nama_layanan }}', 'Indonesian Female', {rate: 0.8});" onblur="responsiveVoice.cancel();" type="button" value="Play"><i class="bi bi-mic"></i></button>
                               </body>
                             </td>
                             <td> 
